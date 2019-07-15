@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "sourceMap": true,
+        "outDir": "./build",
+    },
+    "files": [
+        "./source/main.ts",
+        "./source/math.ts"
+    ]
+}
