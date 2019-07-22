@@ -1,5 +1,5 @@
 class int_base extends Object {
-    get data_view() {
+    get dataView() {
         return new DataView(this.data, 0, this.data.byteLength);
     }
     constructor(signed = true, byte_length = 4) {
@@ -8,12 +8,21 @@ class int_base extends Object {
         this.data = new ArrayBuffer(byte_length);
     }
 }
+class float_base extends Object {
+    constructor() {
+        super();
+        this.data = new ArrayBuffer(4);
+    }
+    get dataView() {
+        return new DataView(this.data, 0, this.data.byteLength);
+    }
+}
 class int8 extends int_base {
     set value(rhs) {
-        super.data_view.setInt8(0, rhs);
+        super.dataView.setInt8(0, rhs);
     }
     get value() {
-        return super.data_view.getInt8(0);
+        return super.dataView.getInt8(0);
     }
     valueOf() {
         return this.value;
@@ -22,13 +31,18 @@ class int8 extends int_base {
         super(true, 1);
         this.value = val;
     }
+    get bytes() {
+        let bytes_of_data = new Array(1);
+        bytes_of_data[0] = new uint8(this.value);
+        return bytes_of_data;
+    }
 }
 class int16 extends int_base {
     set value(rhs) {
-        super.data_view.setInt16(0, rhs);
+        super.dataView.setInt16(0, rhs);
     }
     get value() {
-        return super.data_view.getInt16(0);
+        return super.dataView.getInt16(0);
     }
     valueOf() {
         return this.value;
@@ -37,13 +51,19 @@ class int16 extends int_base {
         super(true, 2);
         this.value = val;
     }
+    get bytes() {
+        let bytes_of_data = new Array(2);
+        bytes_of_data[0] = new uint8(this.value & 0xFF);
+        bytes_of_data[1] = new uint8((this.value >> 8) & 0xFF);
+        return bytes_of_data;
+    }
 }
 class int32 extends int_base {
     set value(rhs) {
-        super.data_view.setInt32(0, rhs);
+        super.dataView.setInt32(0, rhs);
     }
     get value() {
-        return super.data_view.getInt32(0);
+        return super.dataView.getInt32(0);
     }
     valueOf() {
         return this.value;
@@ -52,16 +72,21 @@ class int32 extends int_base {
         super(true, 4);
         this.value = val;
     }
+    get bytes() {
+        let bytes_of_data = new Array(4);
+        bytes_of_data[0] = new uint8(this.value & 0xFF);
+        bytes_of_data[1] = new uint8((this.value >> 8) & 0xFF);
+        bytes_of_data[2] = new uint8((this.value >> 16) & 0xFF);
+        bytes_of_data[3] = new uint8((this.value >> 24) & 0xFF);
+        return bytes_of_data;
+    }
 }
-int32.prototype.valueOf = function () {
-    return this.value;
-};
 class uint8 extends int_base {
     set value(rhs) {
-        super.data_view.setUint8(0, rhs);
+        super.dataView.setUint8(0, rhs);
     }
     get value() {
-        return super.data_view.getUint8(0);
+        return super.dataView.getUint8(0);
     }
     valueOf() {
         return this.value;
@@ -70,13 +95,18 @@ class uint8 extends int_base {
         super(false, 1);
         this.value = val;
     }
+    get bytes() {
+        let bytes_of_data = new Array(1);
+        bytes_of_data[0] = new uint8(this.value);
+        return bytes_of_data;
+    }
 }
 class uint16 extends int_base {
     set value(rhs) {
-        super.data_view.setUint16(0, rhs);
+        super.dataView.setUint16(0, rhs);
     }
     get value() {
-        return super.data_view.getUint16(0);
+        return super.dataView.getUint16(0);
     }
     valueOf() {
         return this.value;
@@ -85,13 +115,19 @@ class uint16 extends int_base {
         super(false, 2);
         this.value = val;
     }
+    get bytes() {
+        let bytes_of_data = new Array(2);
+        bytes_of_data[0] = new uint8(this.value & 0xFF);
+        bytes_of_data[1] = new uint8((this.value >> 8) & 0xFF);
+        return bytes_of_data;
+    }
 }
 class uint32 extends int_base {
     set value(rhs) {
-        super.data_view.setUint32(0, rhs);
+        super.dataView.setUint32(0, rhs);
     }
     get value() {
-        return super.data_view.getUint32(0);
+        return super.dataView.getUint32(0);
     }
     valueOf() {
         return this.value;
@@ -100,42 +136,56 @@ class uint32 extends int_base {
         super(false, 4);
         this.value = val;
     }
+    get bytes() {
+        let bytes_of_data = new Array(4);
+        bytes_of_data[0] = new uint8(this.value & 0xFF);
+        bytes_of_data[1] = new uint8((this.value >> 8) & 0xFF);
+        bytes_of_data[2] = new uint8((this.value >> 16) & 0xFF);
+        bytes_of_data[3] = new uint8((this.value >> 24) & 0xFF);
+        return bytes_of_data;
+    }
 }
-/*
-class int extends int32 {};
-class uint extends uint32 {};
-*/
-class Vector {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
+class float32 extends float_base {
+    set value(rhs) {
+        super.dataView.setFloat32(0, rhs);
     }
-    static add(a, b) {
-        return new Vector(a.x + b.x, a.y + b.y);
+    get value() {
+        return super.dataView.getFloat32(0);
     }
-    static sub(a, b) {
-        return new Vector(a.x - b.x, a.y - b.y);
+    valueOf() {
+        return this.value;
     }
-    static mul(a, b) {
-        return new Vector(a.x * b.x, a.y * b.y);
+    constructor(val) {
+        super();
+        this.value = val;
     }
-    static div(a, b) {
-        return new Vector(a.x / b.x, a.y / b.y);
+    get bytes() {
+        let bytes_of_data = new Array(4);
+        bytes_of_data[0] = new uint8(this.value & 0xFF);
+        bytes_of_data[1] = new uint8((this.value >> 8) & 0xFF);
+        bytes_of_data[2] = new uint8((this.value >> 16) & 0xFF);
+        bytes_of_data[3] = new uint8((this.value >> 24) & 0xFF);
+        return bytes_of_data;
     }
-    static adds(a, b) {
-        return new Vector(a.x + b, a.y + b);
+}
+class float extends float32 {
+}
+;
+class int extends int32 {
+}
+;
+class uint extends uint32 {
+}
+;
+function string_to_bytes(s) {
+    let bytes_of_data = new Array(s.length);
+    for (let i = 0; i < s.length; ++i) {
+        bytes_of_data[i] = new uint8(s.charCodeAt(i));
     }
-    static subs(a, b) {
-        return new Vector(a.x - b, a.y - b);
-    }
-    static muls(a, b) {
-        return new Vector(a.x * b, a.y * b);
-    }
-    static divs(a, b) {
-        return new Vector(a.x / b, a.y / b);
-    }
+    return bytes_of_data;
 }
 function clamp(x, a, b) {
     return Math.max(Math.min(x, b), a);
 }
+//export { uint, uint8, uint16, uint32, int, int8, int16, int32 };
 //# sourceMappingURL=math.js.map

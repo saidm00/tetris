@@ -5,8 +5,10 @@
         "sourceMap": true,
         "outDir": "./build",
     },
+    /*
     "files": [
         "./source/main.ts",
         "./source/math.ts"
     ]
+    */
 }

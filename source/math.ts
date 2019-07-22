@@ -2,7 +2,7 @@ abstract class int_base extends Object
 {
     protected data: ArrayBuffer;
 
-    public get data_view (): DataView
+    public get dataView (): DataView
     {
         return new DataView(this.data, 0, this.data.byteLength);
     }
@@ -16,23 +16,41 @@ abstract class int_base extends Object
 
     public abstract set value (rhs: number);
     public abstract get value (): number;
+
+    abstract get bytes (): Array<uint8>;
 }
 
-const int8 = (val: number): int_base =>
+abstract class float_base extends Object
 {
-    this = int_base(true, 1);
+    protected data: ArrayBuffer;
+
+    constructor ()
+    {
+        super();
+        this.data = new ArrayBuffer(4);
+    }
+    
+    public get dataView (): DataView
+    {
+        return new DataView(this.data, 0, this.data.byteLength);
+    }
+
+    public abstract set value (rhs: number);
+    public abstract get value (): number;
+
+    abstract get bytes (): Array<uint8>;
 }
 
 class int8 extends int_base
 {
     public set value (rhs: number)
     {
-        super.data_view.setInt8(0, rhs);
+        super.dataView.setInt8(0, rhs);
     }
 
     public get value (): number
     {
-        return super.data_view.getInt8(0);
+        return super.dataView.getInt8(0);
     }
     
     public valueOf (): number
@@ -45,18 +63,26 @@ class int8 extends int_base
         super(true, 1);
         this.value = val;
     }
+
+    public get bytes(): Array<uint8> {
+        let bytes_of_data = new Array<uint8>(1);
+
+        bytes_of_data[0] = new uint8(this.value);
+
+        return bytes_of_data;
+    }
 }
 
 class int16 extends int_base
 {
     public set value (rhs: number)
     {
-        super.data_view.setInt16(0, rhs);
+        super.dataView.setInt16(0, rhs);
     }
 
     public get value (): number
     {
-        return super.data_view.getInt16(0);
+        return super.dataView.getInt16(0);
     }
     
     public valueOf (): number
@@ -69,18 +95,28 @@ class int16 extends int_base
         super(true, 2);
         this.value = val;
     }
+
+    public get bytes(): Array<uint8>
+    {
+        let bytes_of_data = new Array<uint8>(2);
+
+        bytes_of_data[0] = new uint8(this.value & 0xFF);
+        bytes_of_data[1] = new uint8((this.value >> 8) & 0xFF);
+
+        return bytes_of_data;
+    }
 }
 
 class int32 extends int_base
 {
     public set value (rhs: number)
     {
-        super.data_view.setInt32(0, rhs);
+        super.dataView.setInt32(0, rhs);
     }
 
     public get value (): number
     {
-        return super.data_view.getInt32(0);
+        return super.dataView.getInt32(0);
     }
     
     public valueOf (): number
@@ -93,18 +129,30 @@ class int32 extends int_base
         super(true, 4);
         this.value = val;
     }
+
+    public get bytes(): Array<uint8>
+    {
+        let bytes_of_data = new Array<uint8>(4);
+
+        bytes_of_data[0] = new uint8(this.value & 0xFF);
+        bytes_of_data[1] = new uint8((this.value >> 8) & 0xFF);
+        bytes_of_data[2] = new uint8((this.value >> 16) & 0xFF);
+        bytes_of_data[3] = new uint8((this.value >> 24) & 0xFF);
+
+        return bytes_of_data;
+    }
 }
 
 class uint8 extends int_base
 {
     public set value (rhs: number)
     {
-        super.data_view.setUint8(0, rhs);
+        super.dataView.setUint8(0, rhs);
     }
 
     public get value (): number
     {
-        return super.data_view.getUint8(0);
+        return super.dataView.getUint8(0);
     }
     
     public valueOf (): number
@@ -117,18 +165,25 @@ class uint8 extends int_base
         super(false, 1);
         this.value = val;
     }
+    public get bytes(): Array<uint8> {
+        let bytes_of_data = new Array<uint8>(1);
+
+        bytes_of_data[0] = new uint8(this.value);
+
+        return bytes_of_data;
+    }
 }
 
 class uint16 extends int_base
 {
     public set value (rhs: number)
     {
-        super.data_view.setUint16(0, rhs);
+        super.dataView.setUint16(0, rhs);
     }
 
     public get value (): number
     {
-        return super.data_view.getUint16(0);
+        return super.dataView.getUint16(0);
     }
     
     public valueOf (): number
@@ -141,18 +196,28 @@ class uint16 extends int_base
         super(false, 2);
         this.value = val;
     }
+
+    public get bytes(): Array<uint8>
+    {
+        let bytes_of_data = new Array<uint8>(2);
+
+        bytes_of_data[0] = new uint8(this.value & 0xFF);
+        bytes_of_data[1] = new uint8((this.value >> 8) & 0xFF);
+
+        return bytes_of_data;
+    }
 }
 
 class uint32 extends int_base
 {
     public set value (rhs: number)
     {
-        super.data_view.setUint32(0, rhs);
+        super.dataView.setUint32(0, rhs);
     }
 
     public get value (): number
     {
-        return super.data_view.getUint32(0);
+        return super.dataView.getUint32(0);
     }
     
     public valueOf (): number
@@ -165,58 +230,75 @@ class uint32 extends int_base
         super(false, 4);
         this.value = val;
     }
+    
+    public get bytes(): Array<uint8>
+    {
+        let bytes_of_data = new Array<uint8>(4);
+
+        bytes_of_data[0] = new uint8(this.value & 0xFF);
+        bytes_of_data[1] = new uint8((this.value >> 8) & 0xFF);
+        bytes_of_data[2] = new uint8((this.value >> 16) & 0xFF);
+        bytes_of_data[3] = new uint8((this.value >> 24) & 0xFF);
+
+        return bytes_of_data;
+    }
 }
-/*
+
+class float32 extends float_base
+{
+    public set value (rhs: number)
+    {
+        super.dataView.setFloat32(0, rhs);
+    }
+
+    public get value (): number
+    {
+        return super.dataView.getFloat32(0);
+    }
+    
+    public valueOf (): number
+    {
+        return this.value
+    }
+
+    constructor (val: number)
+    {
+        super();
+        this.value = val;
+    }
+    
+    public get bytes(): Array<uint8>
+    {
+        let bytes_of_data = new Array<uint8>(4);
+
+        bytes_of_data[0] = new uint8(this.value & 0xFF);
+        bytes_of_data[1] = new uint8((this.value >> 8) & 0xFF);
+        bytes_of_data[2] = new uint8((this.value >> 16) & 0xFF);
+        bytes_of_data[3] = new uint8((this.value >> 24) & 0xFF);
+
+        return bytes_of_data;
+    }
+}
+
+class float extends float32 {};
 class int extends int32 {};
 class uint extends uint32 {};
-*/
-class Vector
+
+function string_to_bytes (s: string): Array<uint8>
 {
-    public x: number;
-    public y: number;
+    let bytes_of_data: Array<uint8> = new Array<uint8>(s.length);
 
-    constructor (x: number, y: number)
+    for (let i: number = 0; i < s.length; ++i)
     {
-        this.x = x;
-        this.y = y;
+        bytes_of_data[i] = new uint8(s.charCodeAt(i));
     }
 
-    static add (a: Vector, b: Vector): Vector
-    {
-        return new Vector(a.x + b.x, a.y + b.y);
-    }
-    static sub (a: Vector, b: Vector): Vector
-    {
-        return new Vector(a.x - b.x, a.y - b.y);
-    }
-    static mul (a: Vector, b: Vector): Vector
-    {
-        return new Vector(a.x * b.x, a.y * b.y);
-    }
-    static div (a: Vector, b: Vector): Vector
-    {
-        return new Vector(a.x / b.x, a.y / b.y);
-    }
-    static adds (a: Vector, b: number): Vector
-    {
-        return new Vector(a.x + b, a.y + b);
-    }
-    static subs (a: Vector, b: number): Vector
-    {
-        return new Vector(a.x - b, a.y - b);
-    }
-    static muls (a: Vector, b: number): Vector
-    {
-        return new Vector(a.x * b, a.y * b);
-    }
-    static divs (a: Vector, b: number): Vector
-    {
-        return new Vector(a.x / b, a.y / b);
-    }
-
+    return bytes_of_data;
 }
 
 function clamp(x: number, a: number, b: number)
 {
     return Math.max(Math.min(x, b), a);
 }
+
+//export { uint, uint8, uint16, uint32, int, int8, int16, int32 };

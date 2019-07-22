@@ -35,7 +35,7 @@ class WebGLRenderer implements Renderer
         
         gl.bindTexture(gl.TEXTURE_2D, 0);
 
-        let id: TextureID = <TextureID> this._textures.setValueByKey(name, tex);
+        let id: TextureID = <TextureID> this._textures.setValue(name, tex);
 
         return id;
     }

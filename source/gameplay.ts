@@ -1,3 +1,4 @@
+/*
 class GameplayEvent
 {
 	public time: number;
@@ -39,3 +40,34 @@ class Gameplay
 		return objJsonB64;
 	}
 }
+*/
+/*
+type float = number;
+
+class Input
+{
+	private keysPressed: Array<boolean>;
+
+	public isKeyPressed (keyCode: number): boolean
+	{
+		return this.keysPressed[keyCode] === true;
+	}
+}
+
+class Timespan<T>
+{
+	public readonly start_time: T;
+	public readonly duration: T;
+}
+
+class InputRecord<T>
+{
+	
+}
+
+class Gameplay extends InputRecord<float>
+{
+	public readonly input: Input;
+	public readonly seed: uint32;
+}
+*/

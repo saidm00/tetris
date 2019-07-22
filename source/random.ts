@@ -1,72 +1,75 @@
-namespace Tetris
+class Dice
 {
-    /*
-        Based on: https://gist.github.com/blixt/f17b47c62508be59987b
-    */
-    class Randomizer
+    private seed: uint32;
+    private faces: uint32;
+
+    constructor (seed: uint32, faces: uint32)
     {
-        private _seed: number;
+        this.seed = seed;
+        this.faces = faces;
+    }
 
-        constructor (seed: number)
-        {
-            this._seed = seed % 2147483647;
-            if (this._seed <= 0) this._seed += 2147483646;
-        }
+    public roll (): uint32
+    {
+        let x = hash_fnv_1a(this.seed.bytes) % this.faces.value;
+        ++ this.seed.value;
+        return new uint32(x);
+    }
+}
 
-        // Returns a pseudo-random value between 1 and 2^32 - 2.
-        public nextInt (): number
-        {
-            return this._seed = this._seed * 16807 % 2147483647;
-        }
 
-        // Returns a pseudo-random floating point number in range [0, 1).        
-        public nextFloat (): number
+enum Shape { I, O, T, J, L, S, Z }
+
+// Randomizer is an interface that defines a means to get sudo-random selection of tetromino shapes.
+abstract class Randomizer
+{
+    public abstract get last (): Shape;
+    public abstract next (): Shape;
+}
+
+class RandomizerBag extends Randomizer
+{
+    private bag: Array<Shape>;
+    private dice: Dice;
+    private lastIndex: uint32;
+    
+    constructor (seed: uint32)
+    {
+        super();
+        this.dice = new Dice(seed, new uint32(7));
+        
+        this.bag = new Array<Shape>(7);
+        this.bag[0] = Shape.I;
+        this.bag[1] = Shape.O;
+        this.bag[2] = Shape.T;
+        this.bag[3] = Shape.J;
+        this.bag[4] = Shape.L;
+        this.bag[5] = Shape.S;
+        this.bag[6] = Shape.Z;
+    }
+
+    public next (): Shape
+    {
+        let index: uint32 = this.dice.roll();
+        if (index == this.lastIndex)
         {
-            // We know that result of next() will be 1 to 2147483646 (inclusive).
-            return (this.nextInt() - 1) / 2147483646;
+            index = this.dice.roll();
         }
+        this.lastIndex = index;
+        return this.bag[index.value];
     }
     
-	export enum TetrominoShape { I, O, T, J, L, S, Z }
-	
-	export class BagRandomizer extends Randomizer
-	{
-		private _bag: Array<TetrominoShape>;
-		private _lastPick: number;
-
-        private _intializeBag (): void
-        {
-            this._bag = new Array<TetrominoShape>(7);
-            this._bag[0] = TetrominoShape.I;
-            this._bag[1] = TetrominoShape.O;
-            this._bag[2] = TetrominoShape.T;
-            this._bag[3] = TetrominoShape.J;
-            this._bag[4] = TetrominoShape.L;
-            this._bag[5] = TetrominoShape.S;
-            this._bag[6] = TetrominoShape.Z;
-        }
-
-		constructor (seed: number)
-		{
-			super(seed);
-            this._intializeBag();
-		}
-
-		private _pick (): number
-		{
-			return this.nextInt() % this._bag.length;
-		}
-
-		public pick (): TetrominoShape
-		{
-			let pick: number = this._pick();
-			if (pick == this._lastPick)
-			{
-				pick = this._pick();
-			}
-			this._lastPick = pick;
-			return this._bag[pick];
-		}
-	}
-	
+    public get last (): Shape
+    {
+        return this.bag[this.lastIndex.value];
+    }
 }
+
+/*
+class RandomizerTGM3 extends Randomizer
+{
+}
+
+class RandomizerTGM extends Randomizer
+{
+}*/

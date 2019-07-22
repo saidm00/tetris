@@ -1,67 +1,52 @@
-namespace Hashing
+const FNV_offset_basis: uint32 = new uint32(0x811c9dc5);
+const FNV_prime: uint32 = new uint32(0x1000193);
+
+function hash_fnv_0 (bytes_of_data: Array<uint8>): uint32
 {
-    const FNV_offset_basis: uint32 = new uint32(0x811c9dc5);
-    const FNV_prime: uint32 = new uint32(0x1000193);
+    let hash: uint32 = new uint32(0);
+    let byte_of_data: uint8;
 
-    export const hash_fnv_0 = (bytes_of_data: Array<uint8>): uint32 =>
+    for (let i: number = 0; i < bytes_of_data.length; ++i)
     {
-        let hash: uint32 = new uint32(0);
-        let byte_of_data: uint8;
+        byte_of_data = bytes_of_data[i];
 
-        for (let i: number = 0; i < bytes_of_data.length; ++i)
-        {
-            byte_of_data = bytes_of_data[i];
-
-            hash *= FNV_prime;
-            hash ^= byte_of_data;
-        }
-
-        return hash;
+        hash *= FNV_prime;
+        hash ^= byte_of_data;
     }
 
-    export const hash_fnv_1 = (bytes_of_data: Array<uint8>): uint32 =>
+    return hash;
+}
+
+function hash_fnv_1 (bytes_of_data: Array<uint8>): uint32
+{
+    let hash: uint32 = FNV_offset_basis;
+    let byte_of_data: uint8;
+
+    for (let i: number = 0; i < bytes_of_data.length; ++i)
     {
-        let hash: uint32 = FNV_offset_basis;
-        let byte_of_data: uint8;
+        byte_of_data = bytes_of_data[i];
 
-        for (let i: number = 0; i < bytes_of_data.length; ++i)
-        {
-            byte_of_data = bytes_of_data[i];
-
-            hash *= FNV_prime;
-            hash ^= byte_of_data;
-        }
-
-        return hash;
+        hash *= FNV_prime;
+        hash ^= byte_of_data;
     }
 
-    export const hash_fnv_1a = (bytes_of_data: Array<uint8>): uint32 =>
+    return hash;
+}
+
+function hash_fnv_1a (bytes_of_data: Array<uint8>): uint32
+{
+    let hash: uint32 = FNV_offset_basis;
+    let byte_of_data: uint8;
+
+    for (let i: number = 0; i < bytes_of_data.length; ++i)
     {
-        let hash: uint32 = FNV_offset_basis;
-        let byte_of_data: uint8;
+        byte_of_data = bytes_of_data[i];
 
-        for (let i: number = 0; i < bytes_of_data.length; ++i)
-        {
-            byte_of_data = bytes_of_data[i];
-
-            hash ^= byte_of_data;
-            hash *= FNV_prime;
-        }
-
-        return hash;
+        hash ^= byte_of_data;
+        hash *= FNV_prime;
     }
 
-    export const string_to_bytes = (str: string): Array<uint8> =>
-    {
-        let bytes_of_data: Array<uint8> = new Array<uint8>(str.length);
-
-        for (let i: number = 0; i < str.length; ++i)
-        {
-            bytes_of_data[i] = new uint8(str.charCodeAt(i));
-        }
-
-        return bytes_of_data;
-    }
+    return hash;
 }
 
 class Hashtable <T>
@@ -73,26 +58,10 @@ class Hashtable <T>
         this.data = new Array<T>(size);
     }
 
-    public getValueByIndex (index: number): T
+    public setValue (key: string, value: T): number
     {
-        return this.data[index];
-    }
-    /*
-    public getValueByKey (key: string): T
-    {
-        let key_bytes: Array<uint8> = Hashing.string_to_bytes(key);
-        let index: number = Hashing.hash_fnv_1a(key_bytes).getValue() % this.data.length;
-    }
-
-    public setValueByIndex (index: number, value: T): void
-    {
-        this.data[index] = key;
-    }
-    */
-    public setValueByKey (key: string, value: T): number
-    {
-        let key_bytes: Array<uint8> = Hashing.string_to_bytes(key);
-        let index: number = Hashing.hash_fnv_1a(key_bytes) % this.data.length;
+        const key_bytes: Array<uint8> = string_to_bytes(key);
+        const index: number = hash_fnv_1a(key_bytes) % this.data.length;
 
         this.data[index] = value;
 
